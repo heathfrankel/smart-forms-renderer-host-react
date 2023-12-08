@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@aehrc/smart-forms-renderer": "^0.7.1",
+    "@aehrc/smart-forms-renderer": "^0.10.3",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-scripts": "^5.0.0"

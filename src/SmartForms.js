@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SmartFormsRenderer, getResponse } from '@aehrc/smart-forms-renderer';
+import { SmartFormsRenderer, getResponse, useQuestionnaireResponseStore } from '@aehrc/smart-forms-renderer';
 
 export default function SmartForms({patientId, authorId, questionnaire}) {
  
@@ -21,22 +21,25 @@ export default function SmartForms({patientId, authorId, questionnaire}) {
 
   const [response, setResponse] = useState(initialResponse)
 
+  const updatableResponse =
+      useQuestionnaireResponseStore.use.updatableResponse();
+
   return (
     <div>
-      <SmartFormsRenderer 
-        questionnaire={questionnaire} 
-        questionnaireResponse={response} />
-
-      <div style={{margin: '20px'}}>
-        <button onClick={() => {
-          const response = getResponse();
-
-          // Do something with the questionnaire response
-          setResponse(response);
-        }}>Save</button>
-
-        <div style={{margin: '20px'}}>
-          <pre>{JSON.stringify(response, null, 2)}</pre>
+      <div style={{display: "flex", marginTop: '20px'}}>
+        <div style={{minWidth: '750px', width: '60%'}}>
+          <SmartFormsRenderer questionnaire={questionnaire} 
+                              questionnaireResponse={response} />
+          <div style={{margin: '20px'}}>
+            <button style={{float: 'right'}} onClick={() => {
+              const response = getResponse();
+              // Do something with the questionnaire response
+              setResponse(response);
+            }}>Save</button>
+          </div>
+        </div>
+        <div style={{width: '100px'}}>
+          <pre>{JSON.stringify(updatableResponse, null, 2)}</pre>
         </div>
       </div>
     </div>  
