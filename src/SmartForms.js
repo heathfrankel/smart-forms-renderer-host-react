@@ -1,603 +1,253 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SmartFormsRenderer, getResponse } from '@aehrc/smart-forms-renderer';
 
-export default function App() {
-  
+export default function SmartForms() {
+
   const questionnaire = {
     "resourceType": "Questionnaire",
-    "id": "CVDRiskCalculator",
+    "id": "FallsRiskAssessment",
     "meta": {
-      "versionId": "1",
-      "lastUpdated": "2023-08-01T02:13:04.050+00:00",
-      "source": "#Fs0N63GcYBhMkVP9",
+      "versionId": "25",
+      "lastUpdated": "2023-11-22T15:37:57.327+00:00",
+      "source": "#D6qUU2GD0ayTCh7p",
       "profile": [
         "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-pop-exp",
         "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-render"
       ]
     },
-    "extension": [
+    "contained": [
       {
-        "url": "http://hl7.org/fhir/StructureDefinition/variable",
-        "valueExpression": {
-          "name": "Condition",
-          "language": "application/x-fhir-query",
-          "expression": "Condition?patient={{%patient.id}}"
-        }
-      },
-      {
-        "url": "http://hl7.org/fhir/StructureDefinition/variable",
-        "valueExpression": {
-          "name": "ObsTobaccoSmokingStatus",
-          "language": "application/x-fhir-query",
-          "expression": "Observation?code=72166-2&_count=1&_sort=-date&patient={{%patient.id}}"
-        }
-      },
-      {
-        "url": "http://hl7.org/fhir/StructureDefinition/variable",
-        "valueExpression": {
-          "name": "ObsBodyHeight",
-          "language": "application/x-fhir-query",
-          "expression": "Observation?code=8302-2&_count=1&_sort=-date&patient={{%patient.id}}"
-        }
-      },
-      {
-        "url": "http://hl7.org/fhir/StructureDefinition/variable",
-        "valueExpression": {
-          "name": "ObsBodyWeight",
-          "language": "application/x-fhir-query",
-          "expression": "Observation?code=29463-7&_count=1&_sort=-date&patient={{%patient.id}}"
-        }
-      },
-      {
-        "url": "http://hl7.org/fhir/StructureDefinition/variable",
-        "valueExpression": {
-          "name": "ObsBMI",
-          "language": "application/x-fhir-query",
-          "expression": "Observation?code=39156-5&_count=1&_sort=-date&patient={{%patient.id}}"
-        }
-      },
-      {
-        "url": "http://hl7.org/fhir/StructureDefinition/variable",
-        "valueExpression": {
-          "name": "ObsHeadCircumference",
-          "language": "application/x-fhir-query",
-          "expression": "Observation?code=9843-4&_count=1&_sort=-date&patient={{%patient.id}}"
-        }
-      },
-      {
-        "url": "http://hl7.org/fhir/StructureDefinition/variable",
-        "valueExpression": {
-          "name": "ObsWaistCircumference",
-          "language": "application/x-fhir-query",
-          "expression": "Observation?code=8280-0&_count=1&_sort=-date&patient={{%patient.id}}"
-        }
-      },
-      {
-        "url": "http://hl7.org/fhir/StructureDefinition/variable",
-        "valueExpression": {
-          "name": "ObsBloodPressure",
-          "language": "application/x-fhir-query",
-          "expression": "Observation?code=85354-9&_count=1&_sort=-date&patient={{%patient.id}}"
-        }
-      },
-      {
-        "url": "http://hl7.org/fhir/StructureDefinition/variable",
-        "valueExpression": {
-          "name": "ObsHeartRate",
-          "language": "application/x-fhir-query",
-          "expression": "Observation?code=8867-4&_count=1&_sort=-date&patient={{%patient.id}}"
-        }
-      },
-      {
-        "url": "http://hl7.org/fhir/StructureDefinition/variable",
-        "valueExpression": {
-          "name": "ObsTotalCholesterol",
-          "language": "application/x-fhir-query",
-          "expression": "Observation?code=14647-2&_count=1&_sort=-date&patient={{%patient.id}}"
-        }
-      },
-      {
-        "url": "http://hl7.org/fhir/StructureDefinition/variable",
-        "valueExpression": {
-          "name": "ObsHDLCholesterol",
-          "language": "application/x-fhir-query",
-          "expression": "Observation?code=14646-4&_count=1&_sort=-date&patient={{%patient.id}}"
-        }
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-launchContext",
-        "extension": [
-          {
-            "url": "name",
-            "valueCoding": {
-              "system": "http://hl7.org/fhir/uv/sdc/CodeSystem/launchContext",
-              "code": "patient"
+        "resourceType": "ValueSet",
+        "id": "YesNo",
+        "name": "YesNo",
+        "title": "Yes/No",
+        "status": "draft",
+        "description": "Concepts for Yes, No and Not applicable",
+        "expansion": {
+          "timestamp": "2023-09-01T11:16:50+10:00",
+          "contains": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v2-0532",
+              "code": "Y",
+              "display": "Yes"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v2-0532",
+              "code": "N",
+              "display": "No"
             }
-          },
-          {
-            "url": "type",
-            "valueCode": "Patient"
-          },
-          {
-            "url": "description",
-            "valueString": "The patient that is to be used to pre-populate the form"
-          }
-        ]
+          ]
+        }
       },
       {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/AboutTheHealthCheck|0.1.0"
+        "resourceType": "ValueSet",
+        "id": "Transfer",
+        "name": "Transfer",
+        "title": "Transfer",
+        "status": "draft",
+        "description": "Transfer",
+        "expansion": {
+          "timestamp": "2023-09-01T11:16:50+10:00",
+          "contains": [
+            {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/ordinalValue",
+                  "valueDecimal": 0
+                }
+              ],
+              "system": "http://fhir.medirecords.com/CodeSystem/Transfer",
+              "code": "0",
+              "display": "Complete Independence and Modified Independence - use of aids to be independent is allowed"
+            },
+            {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/ordinalValue",
+                  "valueDecimal": 1
+                }
+              ],
+              "system": "http://fhir.medirecords.com/CodeSystem/Transfer",
+              "code": "1",
+              "display": "Distant Supervision - one person easily or needs supervision for safety"
+            },
+            {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/ordinalValue",
+                  "valueDecimal": 2
+                }
+              ],
+              "system": "http://fhir.medirecords.com/CodeSystem/Transfer",
+              "code": "2",
+              "display": "Close Supervision - one strong skilled helper or two staff; physically can sit"
+            },
+            {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/ordinalValue",
+                  "valueDecimal": 3
+                }
+              ],
+              "system": "http://fhir.medirecords.com/CodeSystem/Transfer",
+              "code": "3",
+              "display": "Unable - no sitting balance, mechanical lift"
+            }
+          ]
+        }
       },
       {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/Consent|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/PatientDetails|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/CurrentPriorities|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/MedicalHistoryCurrentProblems|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/RegularMedications|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/AllergiesAdverseReactions|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/FamilyHistory|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/SocialAndEmotionalWellbeing|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/SocialHistoryChild|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/HomeAndFamily|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/LearningAndDevelopment|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/LearningAndWork|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/Mood|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/MemoryAndThinking|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/ChronicDiseaseAgeing|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/ScreeningPrograms|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/HealthyEating|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/PhysicalActivityAndScreenTime|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/SubstanceUse|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/Gambling|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/SexualHealth|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/EyeHealth|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/EarHealthAndHearing|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/OralAndDentalHealth|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/Skin|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/Immunisation|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/Examination|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/AbsoluteCVDRiskCalculation|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/Investigations|0.1.0"
-      },
-      {
-        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-assembledFrom",
-        "valueCanonical": "http://www.health.gov.au/assessments/mbs/715/FinalisingHealthCheck|0.1.0"
+        "resourceType": "ValueSet",
+        "id": "Mobility",
+        "name": "Mobility",
+        "title": "MobilityScore",
+        "status": "draft",
+        "description": "Mobility Score",
+        "expansion": {
+          "timestamp": "2023-09-01T11:16:50+10:00",
+          "contains": [
+            {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/ordinalValue",
+                  "valueDecimal": 0
+                }
+              ],
+              "system": "http://fhir.medirecords.com/CodeSystem/Mobility",
+              "code": "0",
+              "display": "Complete Independence and Modified Independence - may use any aid, e.g. walking stick"
+            },
+            {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/ordinalValue",
+                  "valueDecimal": 1
+                }
+              ],
+              "system": "http://fhir.medirecords.com/CodeSystem/Mobility",
+              "code": "1",
+              "display": "Distant Supervision - walks with help of one person (verbal or physical)"
+            },
+            {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/ordinalValue",
+                  "valueDecimal": 2
+                }
+              ],
+              "system": "http://fhir.medirecords.com/CodeSystem/Mobility",
+              "code": "2",
+              "display": "Close Supervision - eyes on and hands ready at all times"
+            },
+            {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/ordinalValue",
+                  "valueDecimal": 3
+                }
+              ],
+              "system": "http://fhir.medirecords.com/CodeSystem/Mobility",
+              "code": "3",
+              "display": "Immobile"
+            }
+          ]
+        }
       }
     ],
-    "url": "http://www.health.gov.au/assessments/CVDRiskCalculator",
+    "url": "http://fhir.medirecords.comu/Questionnaire/FallsRiskAssessment",
     "version": "0.1.0",
-    "name": "CVDRiskCalculator",
-    "title": "CVD Risk Calculator",
+    "name": "FallsRiskAssessment",
+    "title": "Falls Risk Assessment",
     "status": "active",
-    "experimental": true,
     "subjectType": [
       "Patient"
     ],
-    "date": "2023-04-03",
-    "publisher": "AEHRC CSIRO",
-    "contact": [
-      {
-        "name": "AEHRC CSIRO",
-        "telecom": [
-          {
-            "system": "url",
-            "value": "https://confluence.csiro.au/display/PCDQFPhase2/Primary+Care+Data+Quality+Foundations+-+Phase+2"
-          }
-        ]
-      }
-    ],
-    "jurisdiction": [
-      {
-        "coding": [
-          {
-            "system": "urn:iso:std:iso:3166",
-            "code": "AU"
-          }
-        ]
-      }
-    ],
-    "copyright": "CSIRO © 2022+; Licensed under Apache License, Version 2.0",
+    "date": "2023-11-22",
+    "publisher": "MediRecords",
     "item": [
       {
         "extension": [
           {
             "url": "http://hl7.org/fhir/StructureDefinition/variable",
             "valueExpression": {
-              "name": "female",
+              "name": "historyscore",
               "language": "text/fhirpath",
-              "expression": "iif(item.where(linkId='418e4a02-de77-48a0-a92a-fe8fcc52b1aa').answer.value.code='female', 1, 0)"
+              "expression": "iif((item.where(linkId = 'history').children().where(answer.valueCoding.code = 'Y').exists()), 1, 0)"
             }
           },
           {
             "url": "http://hl7.org/fhir/StructureDefinition/variable",
             "valueExpression": {
-              "name": "age",
+              "name": "mentalscore",
               "language": "text/fhirpath",
-              "expression": "item.where(linkId='e2a16e4d-2765-4b61-b286-82cfc6356b30').answer.value"
+              "expression": "iif((item.where(linkId = 'mental').children().where(answer.valueCoding.code = 'Y').exists()), 1, 0)"
             }
           },
           {
             "url": "http://hl7.org/fhir/StructureDefinition/variable",
             "valueExpression": {
-              "name": "cvdAge",
+              "name": "visionscore",
               "language": "text/fhirpath",
-              "expression": "iif(%age > 74, 74, iif(%age < 35, 35, %age))"
+              "expression": "iif((item.where(linkId = 'vision').children().where(answer.valueCoding.code = 'Y').exists()), 1, 0)"
             }
           },
           {
             "url": "http://hl7.org/fhir/StructureDefinition/variable",
             "valueExpression": {
-              "name": "systolicBP",
+              "name": "toiletingscore",
               "language": "text/fhirpath",
-              "expression": "item.where(linkId='4b98f514-2f6a-41f3-ad9d-185abc68ae34').answer.value"
+              "expression": "iif((item.where(linkId = 'toileting').children().where(answer.valueCoding.code = 'Y').exists()), 1, 0)"
             }
           },
           {
             "url": "http://hl7.org/fhir/StructureDefinition/variable",
             "valueExpression": {
-              "name": "smoker",
+              "name": "transferscore",
               "language": "text/fhirpath",
-              "expression": "iif(item.where(linkId='b639a3a8-f476-4cc8-b5c7-f5d2abb23511').answer.value.code='77176002', 1, 0)"
+              "expression": "item.where(linkId = 'transfer').children().where(linkId = '5').answer.valueCoding.extension.where(url = 'http://hl7.org/fhir/StructureDefinition/ordinalValue').valueDecimal"
             }
           },
           {
             "url": "http://hl7.org/fhir/StructureDefinition/variable",
             "valueExpression": {
-              "name": "totalCh",
+              "name": "mobilityscore",
               "language": "text/fhirpath",
-              "expression": "item.where(linkId='f11feebc-fc4a-40d5-8481-b87d9f5a89aa').answer.value"
+              "expression": "item.where(linkId = 'mobility').children().where(linkId = '6').answer.valueCoding.extension.where(url = 'http://hl7.org/fhir/StructureDefinition/ordinalValue').valueDecimal"
             }
           },
           {
             "url": "http://hl7.org/fhir/StructureDefinition/variable",
             "valueExpression": {
-              "name": "hdl",
+              "name": "riskscore",
               "language": "text/fhirpath",
-              "expression": "item.where(linkId='c47a7fae-0c60-40f8-8426-1019b1f0dd8f').answer.value"
+              "expression": "%mentalscore + %historyscore + %visionscore + %toiletingscore + %transferscore + %mobilityscore"
             }
           },
           {
             "url": "http://hl7.org/fhir/StructureDefinition/variable",
             "valueExpression": {
-              "name": "diabetes",
+              "name": "_lowrisk",
               "language": "text/fhirpath",
-              "expression": "iif(item.where(linkId='e8fed84e-6c15-4f62-bc95-cd08033af3f7').answer.value = true,1,0)"
+              "expression": "iif(%riskscore < 2, true, false)"
             }
           },
           {
             "url": "http://hl7.org/fhir/StructureDefinition/variable",
             "valueExpression": {
-              "name": "ecgLvh",
+              "name": "_highrisk",
               "language": "text/fhirpath",
-              "expression": "iif(item.where(linkId='b980624c-e91a-44d4-80ba-a9f34c0e1188').answer.value = true,1,0)"
-            }
-          },
-          {
-            "url": "http://hl7.org/fhir/StructureDefinition/variable",
-            "valueExpression": {
-              "name": "cBase",
-              "language": "text/fhirpath",
-              "expression": "18.8144"
-            }
-          },
-          {
-            "url": "http://hl7.org/fhir/StructureDefinition/variable",
-            "valueExpression": {
-              "name": "cFemale",
-              "language": "text/fhirpath",
-              "expression": "%female * -1.2146"
-            }
-          },
-          {
-            "url": "http://hl7.org/fhir/StructureDefinition/variable",
-            "valueExpression": {
-              "name": "cAge",
-              "language": "text/fhirpath",
-              "expression": "%cvdAge.ln() * -1.8443"
-            }
-          },
-          {
-            "url": "http://hl7.org/fhir/StructureDefinition/variable",
-            "valueExpression": {
-              "name": "cAgeFemale",
-              "language": "text/fhirpath",
-              "expression": "%female * %cvdAge.ln() * 0.3668"
-            }
-          },
-          {
-            "url": "http://hl7.org/fhir/StructureDefinition/variable",
-            "valueExpression": {
-              "name": "cSBP",
-              "language": "text/fhirpath",
-              "expression": "%systolicBP.ln() * -1.4032"
-            }
-          },
-          {
-            "url": "http://hl7.org/fhir/StructureDefinition/variable",
-            "valueExpression": {
-              "name": "cSmoker",
-              "language": "text/fhirpath",
-              "expression": "%smoker * -0.3899"
-            }
-          },
-          {
-            "url": "http://hl7.org/fhir/StructureDefinition/variable",
-            "valueExpression": {
-              "name": "cTcHdl",
-              "language": "text/fhirpath",
-              "expression": "(%totalCh / %hdl).ln() * -0.539"
-            }
-          },
-          {
-            "url": "http://hl7.org/fhir/StructureDefinition/variable",
-            "valueExpression": {
-              "name": "cDiabetes",
-              "language": "text/fhirpath",
-              "expression": "%diabetes * -0.3036"
-            }
-          },
-          {
-            "url": "http://hl7.org/fhir/StructureDefinition/variable",
-            "valueExpression": {
-              "name": "cDiabetesFemale",
-              "language": "text/fhirpath",
-              "expression": "%female * %diabetes * -0.1697"
-            }
-          },
-          {
-            "url": "http://hl7.org/fhir/StructureDefinition/variable",
-            "valueExpression": {
-              "name": "cEcgLvh",
-              "language": "text/fhirpath",
-              "expression": "%ecgLvh * -0.3362"
-            }
-          },
-          {
-            "url": "http://hl7.org/fhir/StructureDefinition/variable",
-            "valueExpression": {
-              "name": "sumOfCoeffs",
-              "language": "text/fhirpath",
-              "expression": "%cBase + %cFemale + %cAge + %cAgeFemale + %cSBP + %cSmoker + %cTcHdl + %cDiabetes + %cDiabetesFemale + %cEcgLvh"
-            }
-          },
-          {
-            "url": "http://hl7.org/fhir/StructureDefinition/variable",
-            "valueExpression": {
-              "name": "cvdScale",
-              "language": "text/fhirpath",
-              "expression": "(0.6536 + (%sumOfCoeffs * -0.2402)).exp()"
-            }
-          },
-          {
-            "url": "http://hl7.org/fhir/StructureDefinition/variable",
-            "valueExpression": {
-              "name": "cvdU",
-              "language": "text/fhirpath",
-              "expression": "(5.ln()-%sumOfCoeffs)/%cvdScale"
-            }
-          },
-          {
-            "url": "http://hl7.org/fhir/StructureDefinition/variable",
-            "valueExpression": {
-              "name": "cvdScore",
-              "language": "text/fhirpath",
-              "expression": "(1 - (%cvdU.exp()*-1).exp()) * 100"
+              "expression": "iif(%riskscore < 2, false, true)"
             }
           }
         ],
-        "linkId": "fd5af92e-c248-497a-8007-ee0952ccd4d9",
-        "text": "Absolute Cardiovascular Risk Calculation ",
+        "linkId": "root",
+        "text": "Falls Risk Assessment",
         "type": "group",
         "item": [
           {
-            "extension": [
-              {
-                "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",
-                "valueExpression": {
-                  "language": "text/fhirpath",
-                  "expression": "iif(today().toString().select(substring(5,2) & substring(8,2)).toInteger() > %patient.birthDate.toString().select(substring(5,2) & substring(8,2)).toInteger(), today().toString().substring(0,4).toInteger() - %patient.birthDate.toString().substring(0,4).toInteger(), today().toString().substring(0,4).toInteger() - %patient.birthDate.toString().substring(0,4).toInteger() - 1)"
-                }
-              }
-            ],
-            "linkId": "e2a16e4d-2765-4b61-b286-82cfc6356b30",
-            "text": "Age",
-            "type": "integer",
-            "repeats": false
-          },
-          {
-            "extension": [
-              {
-                "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",
-                "valueExpression": {
-                  "language": "text/fhirpath",
-                  "expression": "%patient.gender"
-                }
-              },
-              {
-                "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
-                "valueCodeableConcept": {
-                  "coding": [
-                    {
-                      "system": "http://hl7.org/fhir/questionnaire-item-control",
-                      "code": "radio-button"
-                    }
-                  ]
-                }
-              }
-            ],
-            "linkId": "418e4a02-de77-48a0-a92a-fe8fcc52b1aa",
-            "text": "Gender",
-            "type": "choice",
-            "repeats": false,
-            "answerValueSet": "http://hl7.org/fhir/ValueSet/administrative-gender"
-          },
-          {
-            "extension": [
-              {
-                "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",
-                "valueExpression": {
-                  "language": "text/fhirpath",
-                  "expression": "%ObsTobaccoSmokingStatus.entry.resource.valueCodeableConcept.coding"
-                }
-              },
-              {
-                "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
-                "valueCodeableConcept": {
-                  "coding": [
-                    {
-                      "system": "http://hl7.org/fhir/questionnaire-item-control",
-                      "code": "radio-button"
-                    }
-                  ]
-                }
-              }
-            ],
-            "linkId": "b639a3a8-f476-4cc8-b5c7-f5d2abb23511",
-            "text": "Smoking status",
-            "type": "choice",
-            "repeats": false,
-            "answerOption": [
-              {
-                "valueCoding": {
-                  "system": "http://snomed.info/sct",
-                  "code": "266919005",
-                  "display": "Never smoked"
-                }
-              },
-              {
-                "valueCoding": {
-                  "system": "http://snomed.info/sct",
-                  "code": "77176002",
-                  "display": "Smoker"
-                }
-              },
-              {
-                "valueCoding": {
-                  "system": "http://snomed.info/sct",
-                  "code": "8517006",
-                  "display": "Ex-Smoker"
-                }
-              },
-              {
-                "valueCoding": {
-                  "system": "http://snomed.info/sct",
-                  "code": "16090371000119103",
-                  "display": "Environmental exposure to tobacco smoke (home, car, etc)"
-                }
-              },
-              {
-                "valueString": "Wants to quit"
-              },
-              {
-                "valueString": "Other tobacco use"
-              }
-            ]
-          },
-          {
-            "extension": [
-              {
-                "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",
-                "valueExpression": {
-                  "language": "text/fhirpath",
-                  "expression": "%ObsBloodPressure.entry.resource.component.where(code.coding.where(code='8480-6')).value.value"
-                }
-              },
-              {
-                "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unit",
-                "valueCoding": {
-                  "system": "http://unitsofmeasure.org",
-                  "code": "mm[Hg]"
-                }
-              }
-            ],
-            "linkId": "4b98f514-2f6a-41f3-ad9d-185abc68ae34",
-            "text": "Systolic Blood Pressure",
-            "type": "decimal",
+            "linkId": "history",
+            "text": "1. History of Falls",
+            "type": "group",
             "item": [
               {
                 "extension": [
@@ -607,15 +257,21 @@ export default function App() {
                       "coding": [
                         {
                           "system": "http://hl7.org/fhir/questionnaire-item-control",
-                          "code": "prompt"
+                          "code": "radio-button"
                         }
                       ]
                     }
+                  },
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-choiceOrientation",
+                    "valueCode": "horizontal"
                   }
                 ],
-                "linkId": "1624394a-1777-4692-b304-03cd42de4c27",
-                "text": "75 or more",
-                "type": "display"
+                "linkId": "1.1",
+                "text": "Did the patient present to hospital with a fall or have they had a fall since admission?",
+                "type": "choice",
+                "repeats": false,
+                "answerValueSet": "#YesNo"
               },
               {
                 "extension": [
@@ -625,38 +281,57 @@ export default function App() {
                       "coding": [
                         {
                           "system": "http://hl7.org/fhir/questionnaire-item-control",
-                          "code": "unit"
+                          "code": "radio-button"
                         }
                       ]
                     }
+                  },
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-choiceOrientation",
+                    "valueCode": "horizontal"
                   }
                 ],
-                "linkId": "414f230f-7b33-4e55-b323-724206f6825e",
-                "text": "mm Hg",
-                "type": "display"
+                "linkId": "1.2",
+                "text": "Has the patient fallen in the last 6 months?",
+                "type": "choice",
+                "enableWhen": [
+                  {
+                    "question": "1.1",
+                    "operator": "=",
+                    "answerCoding": {
+                      "system": "http://terminology.hl7.org/CodeSystem/v2-0532",
+                      "code": "N",
+                      "display": "No"
+                    }
+                  }
+                ],
+                "repeats": false,
+                "answerValueSet": "#YesNo"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-calculatedExpression",
+                    "valueExpression": {
+                      "language": "text/fhirpath",
+                      "expression": "%historyscore"
+                    }
+                  },
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden",
+                    "valueBoolean": true
+                  }
+                ],
+                "linkId": "historyscore",
+                "text": "Score",
+                "type": "integer"
               }
             ]
           },
           {
-            "extension": [
-              {
-                "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",
-                "valueExpression": {
-                  "language": "text/fhirpath",
-                  "expression": "%ObsTotalCholesterol.entry.resource.value.value"
-                }
-              },
-              {
-                "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unit",
-                "valueCoding": {
-                  "system": "http://unitsofmeasure.org",
-                  "code": "mmol/L"
-                }
-              }
-            ],
-            "linkId": "f11feebc-fc4a-40d5-8481-b87d9f5a89aa",
-            "text": "Total Cholesterol",
-            "type": "decimal",
+            "linkId": "mental",
+            "text": "2. Mental Status",
+            "type": "group",
             "item": [
               {
                 "extension": [
@@ -666,15 +341,20 @@ export default function App() {
                       "coding": [
                         {
                           "system": "http://hl7.org/fhir/questionnaire-item-control",
-                          "code": "prompt"
+                          "code": "radio-button"
                         }
                       ]
                     }
+                  },
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-choiceOrientation",
+                    "valueCode": "horizontal"
                   }
                 ],
-                "linkId": "0f260464-fcfc-46d1-b04b-c8fb061b781e",
-                "text": "2 or more",
-                "type": "display"
+                "linkId": "2.1",
+                "text": "Is the patient confused?",
+                "type": "choice",
+                "answerValueSet": "#YesNo"
               },
               {
                 "extension": [
@@ -684,38 +364,68 @@ export default function App() {
                       "coding": [
                         {
                           "system": "http://hl7.org/fhir/questionnaire-item-control",
-                          "code": "unit"
+                          "code": "radio-button"
                         }
                       ]
                     }
+                  },
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-choiceOrientation",
+                    "valueCode": "horizontal"
                   }
                 ],
-                "linkId": "d5a18260-0376-4c73-97a9-a23198bccce1",
-                "text": "mmol/L",
-                "type": "display"
+                "linkId": "2.2",
+                "text": "Is the patient disoriented?",
+                "type": "choice",
+                "answerValueSet": "#YesNo"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                    "valueCodeableConcept": {
+                      "coding": [
+                        {
+                          "system": "http://hl7.org/fhir/questionnaire-item-control",
+                          "code": "radio-button"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-choiceOrientation",
+                    "valueCode": "horizontal"
+                  }
+                ],
+                "linkId": "2.3",
+                "text": "Is the patient agitated?",
+                "type": "choice",
+                "answerValueSet": "#YesNo"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-calculatedExpression",
+                    "valueExpression": {
+                      "language": "text/fhirpath",
+                      "expression": "%mentalscore"
+                    }
+                  },
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden",
+                    "valueBoolean": true
+                  }
+                ],
+                "linkId": "mentalscore",
+                "text": "Score",
+                "type": "integer"
               }
             ]
           },
           {
-            "extension": [
-              {
-                "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",
-                "valueExpression": {
-                  "language": "text/fhirpath",
-                  "expression": "%ObsHDLCholesterol.entry.resource.value.value"
-                }
-              },
-              {
-                "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unit",
-                "valueCoding": {
-                  "system": "http://unitsofmeasure.org",
-                  "code": "mmol/L"
-                }
-              }
-            ],
-            "linkId": "c47a7fae-0c60-40f8-8426-1019b1f0dd8f",
-            "text": "HDL Cholesterol",
-            "type": "decimal",
+            "linkId": "vision",
+            "text": "3. Vision",
+            "type": "group",
             "item": [
               {
                 "extension": [
@@ -725,15 +435,20 @@ export default function App() {
                       "coding": [
                         {
                           "system": "http://hl7.org/fhir/questionnaire-item-control",
-                          "code": "prompt"
+                          "code": "radio-button"
                         }
                       ]
                     }
+                  },
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-choiceOrientation",
+                    "valueCode": "horizontal"
                   }
                 ],
-                "linkId": "9b05a756-40f6-4ae4-9ec9-179e55685531",
-                "text": "Between 0.2 - 5",
-                "type": "display"
+                "linkId": "3.1",
+                "text": "Does the patient require eyeglasses continually?",
+                "type": "choice",
+                "answerValueSet": "#YesNo"
               },
               {
                 "extension": [
@@ -743,88 +458,370 @@ export default function App() {
                       "coding": [
                         {
                           "system": "http://hl7.org/fhir/questionnaire-item-control",
-                          "code": "unit"
+                          "code": "radio-button"
                         }
                       ]
                     }
+                  },
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-choiceOrientation",
+                    "valueCode": "horizontal"
                   }
                 ],
-                "linkId": "28576058-6a24-4516-900a-42c9452722d3",
-                "text": "mmol/L",
-                "type": "display"
+                "linkId": "3.2",
+                "text": "Does the patient report blurred vision?",
+                "type": "choice",
+                "answerValueSet": "#YesNo"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                    "valueCodeableConcept": {
+                      "coding": [
+                        {
+                          "system": "http://hl7.org/fhir/questionnaire-item-control",
+                          "code": "radio-button"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-choiceOrientation",
+                    "valueCode": "horizontal"
+                  }
+                ],
+                "linkId": "2.3",
+                "text": "Does the patient have glaucoma, cataracts or macular degeneration?",
+                "type": "choice",
+                "answerValueSet": "#YesNo"
               }
             ]
           },
           {
-            "extension": [
+            "linkId": "toileting",
+            "text": "4. Toileting",
+            "type": "group",
+            "item": [
               {
-                "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",
-                "valueExpression": {
-                  "language": "text/fhirpath",
-                  "expression": "%Condition.entry.resource.code.coding.where(system='http://snomed.info/sct' and code='44054006').exists()"
-                }
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                    "valueCodeableConcept": {
+                      "coding": [
+                        {
+                          "system": "http://hl7.org/fhir/questionnaire-item-control",
+                          "code": "radio-button"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-choiceOrientation",
+                    "valueCode": "horizontal"
+                  }
+                ],
+                "linkId": "4.1",
+                "text": "Are there any alterations in urination?",
+                "type": "choice",
+                "answerValueSet": "#YesNo"
               }
-            ],
-            "linkId": "e8fed84e-6c15-4f62-bc95-cd08033af3f7",
-            "text": "Diabetes",
-            "type": "boolean",
-            "repeats": false
+            ]
           },
           {
-            "linkId": "b980624c-e91a-44d4-80ba-a9f34c0e1188",
-            "text": "ECG LVH",
-            "type": "boolean",
-            "repeats": false
+            "linkId": "transfer",
+            "text": "5. Transfer Score",
+            "type": "group",
+            "item": [
+              {
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                    "valueCodeableConcept": {
+                      "coding": [
+                        {
+                          "system": "http://hl7.org/fhir/questionnaire-item-control",
+                          "code": "radio-button"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-choiceOrientation",
+                    "valueCode": "vertical"
+                  }
+                ],
+                "linkId": "5",
+                "text": "Bed to chair and back",
+                "type": "choice",
+                "answerValueSet": "#Transfer"
+              }
+            ]
+          },
+          {
+            "linkId": "mobility",
+            "text": "6. Mobility Score",
+            "type": "group",
+            "item": [
+              {
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                    "valueCodeableConcept": {
+                      "coding": [
+                        {
+                          "system": "http://hl7.org/fhir/questionnaire-item-control",
+                          "code": "radio-button"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-choiceOrientation",
+                    "valueCode": "vertical"
+                  }
+                ],
+                "linkId": "6",
+                "text": "x",
+                "type": "choice",
+                "answerValueSet": "#Mobility"
+              }
+            ]
           },
           {
             "extension": [
               {
                 "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-calculatedExpression",
                 "valueExpression": {
-                  "description": "CVD Risk Score",
                   "language": "text/fhirpath",
-                  "expression": "%cvdScore.round(0)"
+                  "expression": "%riskscore"
                 }
               }
             ],
-            "linkId": "ca830916-e2ee-4b24-a4c1-13eee23f8733",
-            "text": "Cardiovascular disease risk calculated result",
+            "linkId": "fallsscore",
+            "text": "Falls Risk Score",
             "type": "integer",
-            "repeats": false,
-            "readOnly": true,
-            "item": [
+            "readOnly": true
+          },
+          {
+            "extension": [
               {
-                "extension": [
-                  {
-                    "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-displayCategory",
-                    "valueCodeableConcept": {
-                      "coding": [
-                        {
-                          "system": "http://hl7.org/fhir/questionnaire-display-category",
-                          "code": "instructions"
-                        }
-                      ]
+                "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-calculatedExpression",
+                "valueExpression": {
+                  "language": "text/fhirpath",
+                  "expression": "%risk"
+                }
+              },
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://hl7.org/fhir/questionnaire-item-control",
+                      "code": "check-box"
                     }
-                  }
-                ],
-                "linkId": "1d0b746d-70a3-4c09-a33b-f67fd6db63a0",
-                "text": "https://auscvdrisk.com.au/risk-calculator",
-                "type": "display"
+                  ]
+                }
+              },
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-choiceOrientation",
+                "valueCode": "horizontal"
+              },
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden",
+                "valueBoolean": true
+              }
+            ],
+            "linkId": "fallsrisk",
+            "text": "Risk",
+            "type": "choice",
+            "readOnly": true,
+            "answerOption": [
+              {
+                "valueCoding": {
+                  "system": "http://fhir.medirecords.com/CodeSystem/Risk",
+                  "code": "low",
+                  "display": "Low Risk (Score < 2)"
+                }
+              },
+              {
+                "valueCoding": {
+                  "system": "http://fhir.medirecords.com/CodeSystem/Risk",
+                  "code": "high",
+                  "display": "High Risk (Score 2 or above)"
+                }
               }
             ]
+          },
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-calculatedExpression",
+                "valueExpression": {
+                  "language": "text/fhirpath",
+                  "expression": "iif(%riskscore < 2, 'Low Risk (Score < 2)', 'High Risk (Score 2 or above)')"
+                }
+              },
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "system": "http://hl7.org/fhir/questionnaire-item-control",
+                      "code": "check-box"
+                    }
+                  ]
+                }
+              },
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-choiceOrientation",
+                "valueCode": "horizontal"
+              },
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden",
+                "valueBoolean": true
+              }
+            ],
+            "linkId": "fallsrisk",
+            "text": "Risk",
+            "type": "choice",
+            "readOnly": false,
+            "answerOption": [
+              {
+                "valueString": "Low Risk (Score < 2)"
+              },
+              {
+                "valueString": "High Risk (Score 2 or above)"
+              }
+            ]
+          },
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-calculatedExpression",
+                "valueExpression": {
+                  "language": "text/fhirpath",
+                  "expression": "%_lowrisk"
+                }
+              },
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden",
+                "valueBoolean": true
+              }
+            ],
+            "linkId": "lowrisk",
+            "text": "Low Risk (Score < 2)",
+            "type": "boolean",
+            "readOnly": true
+          },
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-calculatedExpression",
+                "valueExpression": {
+                  "language": "text/fhirpath",
+                  "expression": "%_lowrisk.not()"
+                }
+              },
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden",
+                "valueBoolean": true
+              }
+            ],
+            "linkId": "highrisk",
+            "text": "High Risk (Score 2 or above)",
+            "type": "boolean",
+            "readOnly": true
+          },
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-calculatedExpression",
+                "valueExpression": {
+                  "language": "text/fhirpath",
+                  "expression": "%risk2"
+                }
+              },
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden",
+                "valueBoolean": true
+              }
+            ],
+            "linkId": "risk-display",
+            "text": "Risk",
+            "type": "string",
+            "readOnly": true
+          },
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-enableWhenExpression",
+                "valueExpression": {
+                  "language": "text/fhirpath",
+                  "expression": "%riskscore < 2"
+                }
+              }
+            ],
+            "linkId": "risk-display",
+            "text": "Low Risk (Score < 2)",
+            "type": "display"
+          },
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-enableWhenExpression",
+                "valueExpression": {
+                  "language": "text/fhirpath",
+                  "expression": "%riskscore >= 2"
+                }
+              }
+            ],
+            "linkId": "risk-display",
+            "text": "High Risk (Score 2 or above)",
+            "type": "display"
           }
         ]
       }
     ]
+  };
+
+  const patientId = 12345;
+  const authorId = 67890;
+
+  const initialResponse = 
+  { 
+    "resourceType": "QuestionnaireResponse",
+    "subject": { "reference": "Patient/" + patientId }, 
+    "author": { "reference": "Practitioner/" + authorId },
+    "status": "in-progress",
+    "item": [
+      {
+        "linkId": questionnaire.item[0].linkId,
+        "text": questionnaire.item[0].text,
+        "item": []
+      }
+    ],
+    "questionnaire": questionnaire.url + "|" + questionnaire.version
   }
+
+  const [response, setResponse] = useState(initialResponse)
 
   return (
     <div>
-      <SmartFormsRenderer questionnaire={questionnaire}/>
-      <button onClick={() => {
-        const response = getResponse()
-        // Do something with the questionnaire response
-      }}/>
+      <SmartFormsRenderer questionnaire={questionnaire} 
+        questionnaireResponse={response ?? undefined}/>
+
+      <div style={{margin: '20px'}}>
+        <button onClick={() => {
+          const response = getResponse();
+          // Do something with the questionnaire response
+          setResponse(response);
+        }}>Save</button>
+
+        <div style={{margin: '20px'}}>
+          <pre>{JSON.stringify(response, null, 2)}</pre>
+        </div>
+      </div>
     </div>  
   )
 
